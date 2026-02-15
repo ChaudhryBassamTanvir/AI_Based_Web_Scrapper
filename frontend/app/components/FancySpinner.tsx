@@ -1,8 +1,25 @@
+import { useEffect, useState } from "react";
+import { AiFillSetting, AiOutlineThunderbolt, AiOutlineRobot } from "react-icons/ai";
+
 interface FancySpinnerProps {
   loading: boolean;
 }
 
 export function FancySpinner({ loading }: FancySpinnerProps) {
+  const icons = [<AiFillSetting />, <AiOutlineThunderbolt />, <AiOutlineRobot />];
+  const [currentIcon, setCurrentIcon] = useState(0);
+
+  // Sequential icon animation
+  useEffect(() => {
+    if (!loading) return;
+
+    const interval = setInterval(() => {
+      setCurrentIcon((prev) => (prev + 1) % icons.length);
+    }, 500); // change every 0.5s
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
   if (!loading) return null;
 
   return (
@@ -20,11 +37,9 @@ export function FancySpinner({ loading }: FancySpinnerProps) {
           </div>
         </div>
 
-        {/* Icon row */}
-        <div className="flex gap-3 text-white text-lg animate-pulse">
-          <span>⚙️</span>
-          <span>⚡</span>
-          <span>🤖</span>
+        {/* Sequential icons */}
+        <div className="text-white text-2xl">
+          {icons[currentIcon]}
         </div>
 
         <p className="text-xs text-white/70 tracking-wide">
