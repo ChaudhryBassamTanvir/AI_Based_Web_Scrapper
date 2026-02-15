@@ -2,9 +2,6 @@
 
 # dependencies
 /node_modules
-/frontend/node_modules
-/backend/venv
-
 /.pnp
 .pnp.*
 .yarn/*
@@ -34,8 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-/frontend/.env*
-/backend/.env*
+.env*
 
 # vercel
 .vercel
