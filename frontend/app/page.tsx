@@ -29,17 +29,30 @@ export default function HomePage() {
     setScrapeLoading(false);
   };
 
-  const handleFormat = async () => {
-    if (!scrapedData || !userPrompt) return;
-    setProcessLoading(true);
-    const res = await formatScrapedData(scrapedData, userPrompt);
-    if (res.success) {
-      setFormattedText(res.formatted);
-    } else {
-      alert("Processing failed: " + res.error);
-    }
-    setProcessLoading(false);
-  };
+  // const handleFormat = async () => {
+  //   if (!scrapedData || !userPrompt) return;
+  //   setProcessLoading(true);
+  //   const res = await formatScrapedData(scrapedData, userPrompt);
+  //   if (res.success) {
+  //     setFormattedText(res.formatted);
+  //   } else {
+  //     alert("Processing failed: " + res.error);
+  //   }
+  //   setProcessLoading(false);
+  // };
+const handleFormat = async () => {
+  if (!scrapedData) return; // Only require scrapedData
+  setProcessLoading(true);
+
+  const res = await formatScrapedData(scrapedData, userPrompt); // userPrompt can be empty now
+  if (res.success) {
+    setFormattedText(res.formatted);
+  } else {
+    alert("Processing failed: " + res.error);
+  }
+  setProcessLoading(false);
+};
+
 
   return (
     <div className="p-6 space-y-4">
@@ -58,13 +71,14 @@ export default function HomePage() {
           <JsonViewer data={scrapedData} />
           <PromptInput value={userPrompt} onChange={setUserPrompt} />
 
-          <button
-            onClick={handleFormat}
-            disabled={processLoading || !userPrompt}
-            className="bg-black text-white px-4 py-2 rounded mt-2"
-          >
-            {processLoading ? "Processing..." : "Process with Gemini"}
-          </button>
+      <button
+  onClick={handleFormat}
+  disabled={processLoading}
+  className="bg-black text-white px-4 py-2 rounded mt-2 hover:cursor-pointer"
+>
+  {processLoading ? "Processing..." : "Process with Gemini"}
+</button>
+
         </>
       )}
 

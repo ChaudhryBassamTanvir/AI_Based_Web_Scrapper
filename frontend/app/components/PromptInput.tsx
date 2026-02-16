@@ -35,7 +35,8 @@ export default function PromptInput({ value, onChange }: Props) {
           placeholder={`Example:
 - Extract title, price, SKU, images
 - Clean HTML and remove symbols
-- Return Shopify-compatible JSON`}
+- Return Shopify-compatible JSON
+- By Default it will generate Shopify compatible data`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={5}

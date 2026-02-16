@@ -7,14 +7,16 @@ export async function scrapeWebsite(url: string) {
   return await res.json();
 }
 
-export async function formatScrapedData(data: any, formatType: string) {
+export async function formatScrapedData(data: any, formatType?: string) {
+  const payload: any = { data };
+  if (formatType && formatType.trim() !== "") {
+    payload.format_type = formatType.trim();
+  }
+
   const res = await fetch("http://localhost:8000/format", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      data,
-      format_type: formatType,   // ✅ correct field name
-    }),
+    body: JSON.stringify(payload),
   });
 
   return await res.json();

@@ -2,7 +2,7 @@ import os
 import google.genai as genai
 import asyncio
 
-API_KEY = os.environ.get("GEMINI_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
     raise ValueError("You must set the GEMINI_API_KEY environment variable.")
 
