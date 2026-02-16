@@ -90,24 +90,16 @@ function extractMarkdownTable(markdown: string) {
   return rows;
 }
 
-// 🚀 Universal CSV download
-function downloadCSV(data: any[], rawText?: string) {
-  let csv = "";
+function downloadCSV(data: any[]) {
+  if (!data.length) return;
 
-  if (data && data.length > 0) {
-    // Table or steps
-    const headers = Object.keys(data[0]);
-    csv = [
-      headers.join(","),
-      ...data.map((row) =>
-        headers.map((h) => `"${row[h] ?? ""}"`).join(",")
-      ),
-    ].join("\n");
-  } else if (rawText) {
-    // Plain text → one column CSV
-    const lines = rawText.split("\n").map((l) => l.trim()).filter(Boolean);
-    csv = ["Text", ...lines.map((l) => `"${l}"`)].join("\n");
-  }
+  const headers = Object.keys(data[0]);
+  const csv = [
+    headers.join(","),
+    ...data.map((row) =>
+      headers.map((h) => `"${row[h] ?? ""}"`).join(",")
+    ),
+  ].join("\n");
 
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -165,15 +157,16 @@ export default function FormattedOutput({ formattedText }: Props) {
       />
 
       <div className="relative max-w-4xl mx-auto overflow-auto rounded-lg">
-        {/* Always show CSV button */}
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => downloadCSV(parsedData, formattedText)}
-            className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 transition"
-          >
-            Download CSV
-          </button>
-        </div>
+        {isTable && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => downloadCSV(parsedData)}
+              className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 transition"
+            >
+              Download CSV
+            </button>
+          </div>
+        )}
 
         {isTable ? (
           <table className="min-w-full text-white border border-white/10">
