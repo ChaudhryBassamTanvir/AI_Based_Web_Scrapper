@@ -2,8 +2,10 @@ interface Props {
   formattedText: string;
 }
 
+// Remove markdown/code fences and extra symbols
 function cleanMarkdown(text: string) {
   return text
+    .replace(/```(csv)?/g, "") // remove ``` or ```csv
     .replace(/\*\*/g, "")
     .replace(/\*/g, "")
     .replace(/_{2,}/g, "")
@@ -11,75 +13,20 @@ function cleanMarkdown(text: string) {
     .trim();
 }
 
-// Parse vertical Markdown steps into proper table rows
-function parseVerticalSteps(markdown: string) {
-  const lines = markdown
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
+// Parse Markdown table (| col1 | col2 |) into objects
+function parseMarkdownTable(markdown: string) {
+  const lines = markdown.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (!lines.some((l) => l.includes("|"))) return [];
 
-  const steps: any[] = [];
-  let stepCounter = 1;
-  let stepSectionStarted = false;
-
-  for (const line of lines) {
-    if (line.toLowerCase() === "step") {
-      stepSectionStarted = true;
-      continue;
-    }
-
-    if (!stepSectionStarted) continue;
-
-    if (line === ":---" || /^\*+$/.test(line)) continue;
-
-    const clean = cleanMarkdown(line);
-
-    if (/^\d+$/.test(clean)) continue;
-
-    if (clean.toLowerCase().includes("important") || clean.toLowerCase().includes("summary")) {
-      break;
-    }
-
-    if (clean.length < 5) continue;
-
-    steps.push({
-      Step: stepCounter.toString(),
-      Stage: clean,
-    });
-
-    stepCounter++;
-  }
-
-  return steps.length >= 2 ? steps : [];
-}
-
-// Parse Markdown table (| col1 | col2 |)
-function extractMarkdownTable(markdown: string) {
-  const lines = markdown.split("\n");
-
-  const tableStart = lines.findIndex((l) => l.includes("|") && l.includes("---"));
-  if (tableStart === -1) return [];
-
-  const tableLines: string[] = [];
-  for (let i = tableStart - 1; i < lines.length; i++) {
-    const line = lines[i]?.trim();
-    if (!line || !line.includes("|")) break;
-    tableLines.push(line);
-  }
-
+  const tableLines = lines.filter((l) => l.includes("|"));
   if (tableLines.length < 2) return [];
 
-  const headers = tableLines[0]
-    .split("|")
-    .map((h) => cleanMarkdown(h))
-    .filter(Boolean);
+  // Headers
+  const headers = tableLines[0].split("|").map((h) => h.trim()).filter(Boolean);
 
-  const rows = tableLines.slice(2).map((line) => {
-    const values = line
-      .split("|")
-      .map((v) => cleanMarkdown(v))
-      .filter(() => true);
-
+  // Rows
+  const rows:any = tableLines.slice(2).map((line) => {
+    const values = line.split("|").map((v) => v.trim()).filter(Boolean);
     const obj: Record<string, string> = {};
     headers.forEach((h, i) => {
       obj[h] = values[i] || "";
@@ -87,62 +34,36 @@ function extractMarkdownTable(markdown: string) {
     return obj;
   });
 
-  return rows;
+  return rows.length > 0 ? { headers, rows } : [];
 }
 
-function downloadCSV(data: any[]) {
-  if (!data.length) return;
+// Download CSV from rows or raw text
+function downloadCSV(tableData: any, rawText?: string) {
+  let csvContent = "";
 
-  const headers = Object.keys(data[0]);
-  const csv = [
-    headers.join(","),
-    ...data.map((row) =>
-      headers.map((h) => `"${row[h] ?? ""}"`).join(",")
-    ),
-  ].join("\n");
+  if (tableData?.rows && tableData.rows.length) {
+    csvContent = [
+      tableData.headers.join(","),
+      ...tableData.rows.map((row: any) =>
+        tableData.headers.map((h: string) => `"${row[h] ?? ""}"`).join(",")
+      ),
+    ].join("\n");
+  } else if (rawText) {
+    csvContent = rawText;
+  }
 
-  const blob = new Blob([csv], { type: "text/csv" });
+  const blob = new Blob([csvContent], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = "data.csv";
   a.click();
-
   URL.revokeObjectURL(url);
 }
 
 export default function FormattedOutput({ formattedText }: Props) {
-  let parsedData: any = null;
-  let isTable = false;
-
-  // 1️⃣ Try JSON
-  try {
-    parsedData = JSON.parse(formattedText);
-    if (Array.isArray(parsedData) && typeof parsedData[0] === "object") {
-      isTable = true;
-    }
-  } catch (e) {
-    parsedData = null;
-  }
-
-  // 2️⃣ Try Markdown table
-  if (!isTable && formattedText.includes("|")) {
-    const tableData = extractMarkdownTable(formattedText);
-    if (tableData.length > 0) {
-      parsedData = tableData;
-      isTable = true;
-    }
-  }
-
-  // 3️⃣ Try vertical steps
-  if (!isTable && formattedText.toLowerCase().includes("step")) {
-    const rows = parseVerticalSteps(formattedText);
-    if (rows.length > 0) {
-      parsedData = rows;
-      isTable = true;
-    }
-  }
+  const cleanText = cleanMarkdown(formattedText);
+  const tableData:any = parseMarkdownTable(cleanText);
 
   return (
     <section className="relative w-full py-16 px-6 bg-black overflow-hidden rounded-xl mt-6">
@@ -157,22 +78,22 @@ export default function FormattedOutput({ formattedText }: Props) {
       />
 
       <div className="relative max-w-4xl mx-auto overflow-auto rounded-lg">
-        {isTable && (
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => downloadCSV(parsedData)}
-              className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 transition"
-            >
-              Download CSV
-            </button>
-          </div>
-        )}
+        {/* CSV Download Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => downloadCSV(tableData, cleanText)}
+            className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 transition"
+          >
+            Download CSV
+          </button>
+        </div>
 
-        {isTable ? (
+        {/* Show proper table if AI returned Markdown table */}
+        {tableData?.rows?.length ? (
           <table className="min-w-full text-white border border-white/10">
             <thead>
               <tr>
-                {Object.keys(parsedData[0]).map((key) => (
+                {tableData.headers.map((key: string) => (
                   <th
                     key={key}
                     className="px-4 py-2 border border-white/10 text-left bg-black/80"
@@ -183,11 +104,11 @@ export default function FormattedOutput({ formattedText }: Props) {
               </tr>
             </thead>
             <tbody>
-              {parsedData.map((row: any, idx: number) => (
+              {tableData.rows.map((row: any, idx: number) => (
                 <tr key={idx} className="hover:bg-white/5 transition">
-                  {Object.values(row).map((val: any, i) => (
-                    <td key={i} className="px-4 py-2 border border-white/10">
-                      {val}
+                  {tableData.headers.map((h: string) => (
+                    <td key={h} className="px-4 py-2 border border-white/10">
+                      {row[h]}
                     </td>
                   ))}
                 </tr>
@@ -195,7 +116,10 @@ export default function FormattedOutput({ formattedText }: Props) {
             </tbody>
           </table>
         ) : (
-          <pre className="text-sm text-white/80 p-4">{cleanMarkdown(formattedText)}</pre>
+          // Otherwise show plain clean text
+          <pre className="text-sm text-white/80 p-4 whitespace-pre-wrap break-words">
+            {cleanText}
+          </pre>
         )}
       </div>
     </section>
