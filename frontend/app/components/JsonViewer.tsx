@@ -39,7 +39,7 @@ export default function JsonViewer({ data }: Props) {
         <button
           onClick={handleDownload}
           className="text-xs px-4 py-2 rounded-md bg-white text-black 
-                     hover:bg-gray-200 transition"
+                     hover:bg-gray-200 cursor-pointer transition"
         >
           Download JSON
         </button>

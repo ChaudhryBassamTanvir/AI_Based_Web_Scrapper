@@ -82,7 +82,7 @@ export default function FormattedOutput({ formattedText }: Props) {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => downloadCSV(tableData, cleanText)}
-            className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 transition"
+            className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 transition cursor-pointer"
           >
             Download CSV
           </button>

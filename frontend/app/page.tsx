@@ -62,8 +62,8 @@ const handleFormat = async () => {
         {/* Fancy spinner only for scraping */}
         <FancySpinner loading={scrapeLoading} />
 
-        {/* Scrape button */}
         <ScrapeButton onClick={handleScrape} loading={scrapeLoading} />
+         {/* Scrape button */}
       </div>
 
       {scrapedData && (
