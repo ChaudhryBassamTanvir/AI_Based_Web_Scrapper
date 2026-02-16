@@ -27,7 +27,7 @@ export function FancySpinner({ loading }: FancySpinnerProps) {
       <div className="flex flex-col items-center gap-4">
 
         {/* Main spinning ring */}
-        <div className="relative w-20 h-20">
+        <div className="relative w-5 h-5">
           <div className="absolute inset-0 rounded-full border-4 border-white/20" />
           <div className="absolute inset-0 rounded-full border-4 border-white border-t-transparent animate-spin" />
 

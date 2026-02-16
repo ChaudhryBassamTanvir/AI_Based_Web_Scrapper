@@ -58,7 +58,7 @@ const handleFormat = async () => {
     <div className="p-6 space-y-4">
       <UrlInput value={url} onChange={setUrl} />
 
-      <div className="relative inline-block">
+      <div className="relative inlock flex justify-center items-center">
         {/* Fancy spinner only for scraping */}
         <FancySpinner loading={scrapeLoading} />
 
@@ -70,6 +70,7 @@ const handleFormat = async () => {
         <>
           <JsonViewer data={scrapedData} />
           <PromptInput value={userPrompt} onChange={setUserPrompt} />
+<div className="flex justify-center items-center">
 
       <button
   onClick={handleFormat}
@@ -78,6 +79,7 @@ const handleFormat = async () => {
 >
   {processLoading ? "Processing..." : "Process with Gemini"}
 </button>
+  </div>
 
         </>
       )}
