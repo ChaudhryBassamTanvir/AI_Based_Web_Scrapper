@@ -2,6 +2,8 @@ import asyncio
 import sys
 from typing import Any, Optional
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 PORT = int(os.environ.get("PORT", 8000))  # default to 8000 if not set
 
