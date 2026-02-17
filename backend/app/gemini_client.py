@@ -1,5 +1,5 @@
 import os
-import google.genai as genai
+import google.generativeai as genai
 import asyncio
 
 API_KEY = os.getenv("GEMINI_API_KEY")
