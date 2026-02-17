@@ -7,7 +7,9 @@ PORT = int(os.environ.get("PORT", 8000))  # default to 8000 if not set
 
 if __name__ == "__main__":
     import uvicorn
+    PORT = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)
+
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -80,3 +82,5 @@ def health():
 @app.get("/test")
 def test():
     return {"message": "Hello from FastAPI"}
+
+
