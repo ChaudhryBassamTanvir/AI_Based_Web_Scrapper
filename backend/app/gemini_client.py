@@ -1,5 +1,5 @@
 import os
-import google.generativeai as genai
+import google.genai as genai
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
@@ -8,8 +8,6 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
     raise ValueError("You must set the GEMINI_API_KEY environment variable.")
 client = genai.Client(api_key=API_KEY)
-
-genai.configure(api_key=API_KEY)
 
 async def call_gemini(prompt: str) -> str:
     loop = asyncio.get_event_loop()
