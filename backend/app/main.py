@@ -1,6 +1,13 @@
 import asyncio
 import sys
 from typing import Any, Optional
+import os
+
+PORT = int(os.environ.get("PORT", 8000))  # default to 8000 if not set
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -15,7 +22,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://ai-based-web-scrapper.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,3 +71,12 @@ async def format_endpoint(req: FormatRequest):
     except Exception as e:
         print("❌ ERROR:", str(e))
         return {"success": False, "error": str(e)}
+
+
+@app.get("/")
+def health():
+    return {"status": "Backend live 🚀"}
+
+@app.get("/test")
+def test():
+    return {"message": "Hello from FastAPI"}
