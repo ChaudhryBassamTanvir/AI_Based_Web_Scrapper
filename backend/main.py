@@ -72,7 +72,7 @@ async def format_endpoint(request: Request, req: FormatRequest):
             # Default Shopify-compatible CSV
             user_prompt = (
                 f"{req.data}\n\nConvert this scraped data into a Shopify-compatible CSV format "
-                "(columns: Title, Description, Price, SKU, Stock, Image URL)."
+                "(columns: Title, Description, Price, SKU, Stock, Image URL)"
             )
 
         print("🚀 Calling Gemini...")
