@@ -1,6 +1,11 @@
 import asyncio
 import sys
 from typing import Any, Optional
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from fastapi import Request
+
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,9 +26,11 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from app.scraper import scrape_website
 from app.gemini_client import call_gemini
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI()
-
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://ai-based-web-scrapper.vercel.app"],
@@ -42,15 +49,17 @@ class FormatRequest(BaseModel):
 
 # ------------------- Endpoints ------------------- #
 @app.post("/scrape")
-async def scrape_endpoint(request: ScrapeRequest):
+@limiter.limit("5/minute")
+async def scrape_endpoint(request: Request, payload: ScrapeRequest):
     try:
-        data = await scrape_website(request.url)
+        data = await scrape_website(payload.url)
         return {"success": True, "data": data}
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 @app.post("/format")
-async def format_endpoint(req: FormatRequest):
+@limiter.limit("3/minute")
+async def format_endpoint(request: Request, req: FormatRequest):
     try:
         print("🔥 Format request received")
         print("Data size:", len(str(req.data)))
