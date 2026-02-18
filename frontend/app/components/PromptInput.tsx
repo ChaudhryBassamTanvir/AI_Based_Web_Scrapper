@@ -5,7 +5,7 @@ interface Props {
 
 export default function PromptInput({ value, onChange }: Props) {
   return (
-    <section className="relative w-full py-16 px-6 bg-white overflow-hidden mt-12">
+    <section className="relative w-full py-12 sm:py-16 px-4 sm:px-6 bg-white overflow-hidden mt-8 sm:mt-12">
       
       {/* Grey grid background */}
       <div
@@ -17,14 +17,14 @@ export default function PromptInput({ value, onChange }: Props) {
         }}
       />
 
-      <div className="relative max-w-2xl mx-auto space-y-6">
+      <div className="relative max-w-xl sm:max-w-2xl mx-auto space-y-4 sm:space-y-6">
 
         {/* Heading */}
         <div className="text-center">
-          <h3 className="text-2xl font-semibold text-black">
+          <h3 className="text-xl sm:text-2xl font-semibold text-black">
             AI Extraction Instructions
           </h3>
-          <p className="mt-2 text-sm text-black/60">
+          <p className="mt-2 text-xs sm:text-sm text-black/60">
             Guide the AI on how to extract, format, or filter the product data.
             You can specify fields, structure, or Shopify-ready output.
           </p>
@@ -40,13 +40,14 @@ export default function PromptInput({ value, onChange }: Props) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={5}
-          className="w-full bg-white border border-black rounded-lg px-4 py-3
-                     text-sm resize-none focus:outline-none focus:border-black
+          className="w-full bg-white border border-black rounded-lg
+                     px-3 sm:px-4 py-3 text-xs sm:text-sm
+                     resize-none focus:outline-none focus:border-black
                      transition-all"
         />
 
         {/* Helper text */}
-        <p className="text-xs text-black/50 text-center">
+        <p className="text-[10px] sm:text-xs text-black/50 text-center">
           Leave empty to use the default intelligent extraction.
         </p>
       </div>
