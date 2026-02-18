@@ -8,9 +8,9 @@ export default function ResultPanel({ data }: Props) {
   if (!data) return null;
 
   return (
-    <div className="mt-10 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">
+    <div className="mt-8 sm:mt-10 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <h2 className="text-base sm:text-lg font-semibold">
           Extracted Product JSON
         </h2>
         <button
@@ -24,7 +24,7 @@ export default function ResultPanel({ data }: Props) {
             a.download = "product.json";
             a.click();
           }}
-          className="text-sm border border-white/20 px-4 py-2 rounded-lg hover:border-white transition"
+          className="text-xs sm:text-sm border border-white/20 px-3 sm:px-4 py-2 rounded-lg hover:border-white transition self-start sm:self-auto"
         >
           Download JSON
         </button>
