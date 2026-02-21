@@ -15,7 +15,7 @@ export default function Navbar() {
         {/* Left: Logo + Brand */}
         <div className="flex items-center gap-3">
           <Image
-            src="/lama.jpg"
+            src="/lama.PNG"
             alt="AI Scraper Logo"
             width={44}
             height={44}

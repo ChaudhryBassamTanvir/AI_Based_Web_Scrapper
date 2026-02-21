@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
             <Image
-              src="/lama.jpg"
+              src="/lama.PNG"
               alt="AI Scraper Logo"
               width={34}
               height={34}
