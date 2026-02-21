@@ -3,39 +3,23 @@ name: Auto Deploy (PM2)
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Deploy to EC2 via SSH
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "🚀 Going to project directory"
             cd /var/www/AI_Based_Web_Scrapper
-
-            echo "📥 Pulling latest code"
-            git pull origin main
-
-            echo "🔁 Backend restart (PM2)"
-            cd backend
-            source venv/bin/activate
+            git pull origin master
             pm2 restart backend
-            cd ..
-
-            echo "🏗️ Frontend build & restart"
-            cd frontend
-            npm install
-            npm run build
             pm2 restart frontend
-
-            echo "✅ Deployment completed successfully"
